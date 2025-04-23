@@ -1,29 +1,33 @@
 import React, { useEffect, useState } from 'react';
-import createKeyboardBarcodeScanner from '@point-of-sale/keyboard-barcode-scanner';
+import KeyboardBarcodeScanner from '@point-of-sale/keyboard-barcode-scanner';
 
 const App = () => {
-  const [barcode, setBarcode] = useState('');
+  const [barcodes, setBarcodes] = useState([]);
 
   useEffect(() => {
-    const scanner = createKeyboardBarcodeScanner({
+    const scanner = new KeyboardBarcodeScanner({
       onScan: (code) => {
-        console.log('Scanned code:', code);
-        setBarcode(code);
+        console.log('Scanned:', code);
+        setBarcodes((prev) => [...prev, code]); // Append new code
       },
-      onError: (error) => {
-        console.error('Scan error:', error);
+      onError: (err) => {
+        console.error('Scanner error:', err);
       },
     });
 
     return () => {
-      scanner.stop();
+      scanner?.stop?.();
     };
   }, []);
 
   return (
     <div style={{ padding: '20px' }}>
-      <h2>Barcode Scanner</h2>
-      <p><strong>Scanned Code:</strong> {barcode}</p>
+      <h2>Scanned Barcodes</h2>
+      <ul>
+        {barcodes.map((code, index) => (
+          <li key={index}>{code}</li>
+        ))}
+      </ul>
     </div>
   );
 };
