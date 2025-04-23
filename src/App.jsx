@@ -1,24 +1,34 @@
 import React, { useEffect, useState } from 'react';
-import KeyboardBarcodeScanner from '@point-of-sale/keyboard-barcode-scanner';
 
 const App = () => {
   const [barcodes, setBarcodes] = useState([]);
+  const [buffer, setBuffer] = useState('');
 
   useEffect(() => {
-    const scanner = new KeyboardBarcodeScanner({
-      onScan: (code) => {
-        console.log('Scanned:', code);
-        setBarcodes((prev) => [...prev, code]); // Append new code
-      },
-      onError: (err) => {
-        console.error('Scanner error:', err);
-      },
-    });
+    let timer;
 
-    return () => {
-      scanner?.stop?.();
+    const handleKeyDown = (e) => {
+      clearTimeout(timer);
+
+      // End of barcode (usually Enter)
+      if (e.key === 'Enter') {
+        if (buffer.length > 0) {
+          setBarcodes((prev) => [...prev, buffer]);
+          setBuffer('');
+        }
+      } else {
+        setBuffer((prev) => prev + e.key);
+      }
+
+      // Clear buffer if no key is pressed in 100ms
+      timer = setTimeout(() => setBuffer(''), 100);
     };
-  }, []);
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [buffer]);
 
   return (
     <div style={{ padding: '20px' }}>
@@ -33,6 +43,46 @@ const App = () => {
 };
 
 export default App;
+
+
+
+
+
+// import React, { useEffect, useState } from 'react';
+// import KeyboardBarcodeScanner from '@point-of-sale/keyboard-barcode-scanner';
+
+// const App = () => {
+//   const [barcodes, setBarcodes] = useState([]);
+
+//   useEffect(() => {
+//     const scanner = new KeyboardBarcodeScanner({
+//       onScan: (code) => {
+//         console.log('Scanned:', code);
+//         setBarcodes((prev) => [...prev, code]); // Append new code
+//       },
+//       onError: (err) => {
+//         console.error('Scanner error:', err);
+//       },
+//     });
+
+//     return () => {
+//       scanner?.stop?.();
+//     };
+//   }, []);
+
+//   return (
+//     <div style={{ padding: '20px' }}>
+//       <h2>Scanned Barcodes</h2>
+//       <ul>
+//         {barcodes.map((code, index) => (
+//           <li key={index}>{code}</li>
+//         ))}
+//       </ul>
+//     </div>
+//   );
+// };
+
+// export default App;
 
 
 
@@ -87,4 +137,5 @@ export default App;
 
 
 
-// export default App
+// export default 
+// App
