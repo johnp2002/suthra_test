@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { KeyboardBarcodeScanner } from '@point-of-sale/keyboard-barcode-scanner';
+import createKeyboardBarcodeScanner from '@point-of-sale/keyboard-barcode-scanner';
 
 const App = () => {
   const [barcode, setBarcode] = useState('');
 
   useEffect(() => {
-    const scanner = new KeyboardBarcodeScanner({
+    const scanner = createKeyboardBarcodeScanner({
       onScan: (code) => {
         console.log('Scanned code:', code);
         setBarcode(code);
